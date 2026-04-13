@@ -1,7 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        SONAR_TOKEN = credentials('sonar-token')
+    }
+
     stages {
+
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/tanisha895/8.2C_DevSecOps.git'
@@ -20,15 +25,16 @@ pipeline {
             }
         }
 
-        stage('Coverage') {
+        stage('SonarCloud Analysis') {
             steps {
-                bat 'npm run coverage'
-            }
-        }
-
-        stage('Snyk Scan') {
-            steps {
-                bat 'npx snyk test || exit 0'
+                bat '''
+                npx sonar-scanner ^
+                -Dsonar.projectKey=YOUR_PROJECT_KEY ^
+                -Dsonar.organization=YOUR_ORG ^
+                -Dsonar.sources=. ^
+                -Dsonar.host.url=https://sonarcloud.io ^
+                -Dsonar.login=%SONAR_TOKEN%
+                '''
             }
         }
     }
