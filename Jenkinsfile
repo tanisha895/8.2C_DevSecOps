@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        SONAR_TOKEN = credentials('SONAR_TOKEN')
-    }
-
     stages {
 
         stage('Checkout Code') {
@@ -27,14 +23,16 @@ pipeline {
 
         stage('SonarCloud Analysis') {
             steps {
-                bat '''
-                npx sonar-scanner ^
-                -Dsonar.projectKey=YOUR_PROJECT_KEY ^
-                -Dsonar.organization=YOUR_ORG ^
-                -Dsonar.sources=. ^
-                -Dsonar.host.url=https://sonarcloud.io ^
-                -Dsonar.login=%SONAR_TOKEN%
-                '''
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    bat '''
+                    npx sonar-scanner ^
+                    -Dsonar.projectKey=tanisha895_8.2C_DevSecOps ^
+                    -Dsonar.organization=tanisha895 ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=https://sonarcloud.io ^
+                    -Dsonar.login=%SONAR_TOKEN%
+                    '''
+                }
             }
         }
     }
