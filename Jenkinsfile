@@ -26,7 +26,7 @@ pipeline {
                 bat 'npx snyk auth %SNYK_TOKEN%'
 
                 // Run snyk test (won’t fail pipeline now)
-                bat 'npx snyk test || echo "Snyk found issues but continuing..."'
+                bat 'npx snyk test || echo "continuing..."'
             }
         }
 
@@ -34,8 +34,8 @@ pipeline {
             steps {
                 bat '''
                 npx sonar-scanner ^
-                -Dsonar.projectKey=YOUR_PROJECT_KEY ^
-                -Dsonar.organization=YOUR_ORG ^
+                -Dsonar.projectKey=tanisha895_8.2C_DevSecOps ^
+                -Dsonar.organization=tanisha895 ^
                 -Dsonar.sources=. ^
                 -Dsonar.host.url=https://sonarcloud.io ^
                 -Dsonar.login=%SONAR_TOKEN%
