@@ -10,7 +10,8 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/tanisha895/8.2C_DevSecOps.git'
+                git branch: 'main',
+                    url: 'https://github.com/tanisha895/8.2C_DevSecOps.git'
             }
         }
 
@@ -22,25 +23,42 @@ pipeline {
 
         stage('Run Test + Snyk') {
             steps {
-                // Authenticate Snyk
                 bat 'npx snyk auth %SNYK_TOKEN%'
 
-                // Run snyk test (do not fail pipeline)
-                bat 'npx snyk test || echo continuing...'
+                // Run Snyk but don't fail pipeline on vulnerabilities
+                bat '''
+                    npx snyk test
+                    exit /b 0
+                '''
             }
         }
 
         stage('Install Sonar Scanner') {
             steps {
-                // Ensure sonar-scanner is available
                 bat 'npm install -g sonar-scanner'
             }
         }
 
         stage('SonarCloud Analysis') {
             steps {
-                bat 'sonar-scanner -Dsonar.projectKey=tanisha895_8.2C_DevSecOps -Dsonar.organization=tanisha895 -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=%SONAR_TOKEN%'
+                bat '''
+                    sonar-scanner ^
+                    -Dsonar.projectKey=tanisha895_8.2C_DevSecOps ^
+                    -Dsonar.organization=tanisha895 ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=https://sonarcloud.io ^
+                    -Dsonar.login=%SONAR_TOKEN%
+                '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
