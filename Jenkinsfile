@@ -22,16 +22,12 @@ pipeline {
         }
 
         stage('Run Test + Snyk') {
-            steps {
-                bat 'npx snyk auth %SNYK_TOKEN%'
-
-                // Run Snyk but don't fail pipeline on vulnerabilities
-                bat '''
-                    npx snyk test
-                    exit /b 0
-                '''
-            }
-        }
+    steps {
+        bat 'npm test'
+        bat 'npx snyk auth %SNYK_TOKEN%'
+        bat 'npx snyk test || exit 0'
+    }
+}
 
         stage('Install Sonar Scanner') {
             steps {
